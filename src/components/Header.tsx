@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Dispatch, useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { USER_ID } from '../api/todos';
 import { Errors } from '../types/Errors';
 
 type Props = {
   onCreateTodo: ({ userId, title, completed }: Todo) => Promise<void>;
-  setErrorMessage: (err: string) => void;
+  setErrorMessage: Dispatch<React.SetStateAction<Errors>>;
   setTempTodo: (todo: Todo | null) => void;
   tempTodo: Todo | null;
   isDeleting: boolean;
@@ -37,9 +37,7 @@ export const Header: React.FC<Props> = ({
     if (!inputTitle.trim()) {
       setErrorMessage(Errors.EmptyTitle);
 
-      const timer = setTimeout(() => setErrorMessage(''), 3000);
-
-      return () => clearTimeout(timer);
+      return;
     }
 
     setIsSubmitting(true);
@@ -55,11 +53,7 @@ export const Header: React.FC<Props> = ({
 
     onCreateTodo(newTodo)
       .then(() => setInputTitle(''))
-      .catch(() => {
-        const timer = setTimeout(() => setErrorMessage(''), 3000);
 
-        return () => clearTimeout(timer);
-      })
       .finally(() => {
         setTempTodo(null);
         setIsSubmitting(false);
@@ -69,14 +63,12 @@ export const Header: React.FC<Props> = ({
   return (
     <>
       <header className="todoapp__header">
-        {/* this button should have `active` class only if all todos are completed */}
         <button
           type="button"
           className="todoapp__toggle-all active"
           data-cy="ToggleAllButton"
         />
 
-        {/* Add a todo on form submit */}
         <form onSubmit={handleSubmit}>
           <input
             data-cy="NewTodoField"

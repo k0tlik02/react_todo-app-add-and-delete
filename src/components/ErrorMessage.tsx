@@ -1,11 +1,26 @@
 import cn from 'classnames';
-import React from 'react';
+import React, { Dispatch, useEffect } from 'react';
+import { Errors } from '../types/Errors';
 
 type Props = {
   errorMessage: string;
+  setErrorMessage: Dispatch<React.SetStateAction<Errors>>;
 };
 
-export const ErrorMessage: React.FC<Props> = ({ errorMessage }) => {
+export const ErrorMessage: React.FC<Props> = ({
+  errorMessage,
+  setErrorMessage,
+}) => {
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => setErrorMessage(Errors.Empty), 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+    return;
+  }, [errorMessage, setErrorMessage]);
+
   return (
     <div
       data-cy="ErrorNotification"

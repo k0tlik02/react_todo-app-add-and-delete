@@ -13,7 +13,7 @@ import { Status } from './types/Status';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<Errors>(Errors.Empty);
   const [status, setStatus] = useState<string>(Status.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -25,9 +25,6 @@ export const App: React.FC = () => {
       .then(data => setTodos(data))
       .catch(() => {
         setErrorMessage(Errors.UnableToLoad);
-        const timer = setTimeout(() => setErrorMessage(''), 3000);
-
-        return () => clearTimeout(timer);
       });
   }, []);
 
@@ -47,11 +44,11 @@ export const App: React.FC = () => {
     }
   });
 
-  const countNotCompleted = todos.filter(todo => !todo.completed).length;
-  const countCompleted = todos.filter(todo => todo.completed).length;
+  const notCompletedTodosCount = todos.filter(todo => !todo.completed).length;
+  const completedTodosCount = todos.filter(todo => todo.completed).length;
 
   function onCreateTodo({ userId, title, completed }: Todo) {
-    setErrorMessage('');
+    setErrorMessage(Errors.Empty);
 
     return todoService
       .createTodo({ userId, title, completed })
@@ -82,7 +79,7 @@ export const App: React.FC = () => {
 
   function onClearCompletedTodos() {
     setIsDeletingCompleted(true);
-    setErrorMessage('');
+    setErrorMessage(Errors.Empty);
 
     const completedTodos = todos.filter(todo => todo.completed);
     const completedTodoIds = completedTodos.map(todo => todo.id);
@@ -103,7 +100,6 @@ export const App: React.FC = () => {
 
         if (hasErrors) {
           setErrorMessage(Errors.UnableToDelete);
-          setTimeout(() => setErrorMessage(''), 3000);
         }
       })
       .catch(() => {
@@ -132,10 +128,10 @@ export const App: React.FC = () => {
           isDeleting={isDeleting}
           setIsDeleting={setIsDeleting}
         />
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <Footer
-            countNotCompleted={countNotCompleted}
-            countCompleted={countCompleted}
+            notCompletedTodosCount={notCompletedTodosCount}
+            completedTodosCount={completedTodosCount}
             status={status}
             setStatus={setStatus}
             onClearCompletedTodos={onClearCompletedTodos}
@@ -143,7 +139,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorMessage errorMessage={errorMessage} />
+      <ErrorMessage
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };

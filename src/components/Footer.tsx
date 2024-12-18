@@ -3,16 +3,16 @@ import { Status } from '../types/Status';
 import cn from 'classnames';
 
 type Props = {
-  countNotCompleted: number;
-  countCompleted: number;
+  notCompletedTodosCount: number;
+  completedTodosCount: number;
   status: string;
   setStatus: (status: string) => void;
   onClearCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
-  countNotCompleted,
-  countCompleted,
+  notCompletedTodosCount,
+  completedTodosCount,
   status,
   setStatus,
   onClearCompletedTodos,
@@ -21,7 +21,7 @@ export const Footer: React.FC<Props> = ({
     <>
       <footer className="todoapp__footer" data-cy="Footer">
         <span className="todo-count" data-cy="TodosCounter">
-          {countNotCompleted} items left
+          {notCompletedTodosCount} items left
         </span>
 
         <nav className="filter" data-cy="Filter">
@@ -45,8 +45,8 @@ export const Footer: React.FC<Props> = ({
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
-          style={{ visibility: countCompleted ? 'visible' : 'hidden' }}
-          disabled={!countCompleted}
+          style={{ visibility: completedTodosCount ? 'visible' : 'hidden' }}
+          disabled={!completedTodosCount}
           onClick={onClearCompletedTodos}
         >
           Clear completed
